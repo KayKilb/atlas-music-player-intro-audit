@@ -25,10 +25,11 @@ const MusicPlayer: React.FC = () => {
     }
   }, [loading, playlist]);
 
-  // Skip to the next song, with wrapping
+  // Skip to the next song, with looping
   const handleSkip = useCallback(() => {
     if (!currentSong || playlist.length <= 1) return;
-    let nextIndex = (playlist.findIndex(song => song.id === currentSong.id) + 1) % playlist.length;
+    const nextIndex = (playlist.findIndex(song => song.id === currentSong.id) + 1) % playlist.length;
+    console.log(`Skipping to next song: ${playlist[nextIndex].title}`);
     setCurrentSong(playlist[nextIndex]);
   }, [playlist, currentSong]);
 
@@ -38,14 +39,16 @@ const MusicPlayer: React.FC = () => {
     let randomIndex;
     do {
       randomIndex = Math.floor(Math.random() * playlist.length);
-    } while (playlist[randomIndex].id === currentSong.id);
+    } while (playlist[randomIndex].id === currentSong.id); // Ensure it's a different song
+    console.log(`Shuffling to: ${playlist[randomIndex].title}`);
     setCurrentSong(playlist[randomIndex]);
   }, [playlist, currentSong]);
 
-  // Go to the previous song, with wrapping
+  // Go to the previous song, with looping
   const handlePrevious = useCallback(() => {
     if (!currentSong || playlist.length <= 1) return;
-    let previousIndex = (playlist.findIndex(song => song.id === currentSong.id) - 1 + playlist.length) % playlist.length;
+    const previousIndex = (playlist.findIndex(song => song.id === currentSong.id) - 1 + playlist.length) % playlist.length;
+    console.log(`Going back to: ${playlist[previousIndex].title}`);
     setCurrentSong(playlist[previousIndex]);
   }, [playlist, currentSong]);
 
@@ -70,7 +73,7 @@ const MusicPlayer: React.FC = () => {
           <CurrentlyPlaying
             song={currentSong}
             onPlayPause={handlePlayPause}
-            onSkip={isShuffle ? handleShuffle : handleSkip}
+            onSkip={isShuffle ? handleShuffle : handleSkip} // ✅ Now correctly switches between normal skip & shuffle
             onBack={handlePrevious}
             isPlaying={isPlaying}
             volume={volume}
