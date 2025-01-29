@@ -1,4 +1,4 @@
-// PlayControls.tsx
+// src/components/PlayControls.tsx
 import React, { useState } from 'react';
 import {
   PlayIcon,
@@ -15,6 +15,7 @@ interface PlayControlsProps {
   onSkip: (index?: number) => void;
   isFirstSong: boolean;
   isLastSong: boolean;
+  totalSongs: number; // Added total song count for looping logic
 }
 
 const PlayControls: React.FC<PlayControlsProps> = ({
@@ -23,45 +24,47 @@ const PlayControls: React.FC<PlayControlsProps> = ({
   onPrevious,
   onSkip,
   isFirstSong,
-  isLastSong
+  isLastSong,
+  totalSongs
 }) => {
   const [speed, setSpeed] = useState<number>(1);
   const [isShuffle, setShuffle] = useState<boolean>(false);
 
-  // play/pause state
+  // Toggle play/pause
   const handlePlayPause = () => {
     onPlayPauseToggle();
   };
 
-  // speed between 1x, 2x, and 3x
+  // Cycle between 1x, 2x, and 3x speed
   const handleSpeedToggle = () => {
     setSpeed((prevSpeed) => (prevSpeed === 3 ? 1 : prevSpeed + 1));
   };
 
-  // shuffle mode
+  // Toggle shuffle mode
   const handleShuffleToggle = () => {
     setShuffle((prevShuffle) => !prevShuffle);
   };
 
-const handleSkip = () => {
-  console.log("Skipping Song..."); // Debugging log
-  
-  if (isShuffle) {
-    const randomIndex = Math.floor(Math.random() * 10); // Assuming 10 songs
-    console.log(`Shuffle Mode: Skipping to random song index ${randomIndex}`);
-    onSkip(randomIndex); // Skip to a random song
-  } else {
-    console.log("Skipping to next song...");
+  // Handle skipping songs
+  const handleSkip = () => {
+    console.log("Skipping Song...");
 
-    onSkip((prevIndex) => {
-      if (isLastSong) {
-        console.log("Reached last song. Looping to first song.");
-        return 0; // Loop back to first song
-      }
-      return prevIndex + 1; // Move to next song normally
-    });
-  }
-};
+    if (isShuffle) {
+      const randomIndex = Math.floor(Math.random() * totalSongs);
+      console.log(`Shuffle Mode: Skipping to random song index ${randomIndex}`);
+      onSkip(randomIndex);
+    } else {
+      console.log("Skipping to next song...");
+
+      onSkip((prevIndex) => {
+        if (isLastSong) {
+          console.log("Reached last song. Looping to first song.");
+          return 0; // Loop back to the first song
+        }
+        return prevIndex + 1; // Move to next song normally
+      });
+    }
+  };
 
   return (
     <div className="bg-gray-100 p-4 rounded-lg">
@@ -78,7 +81,6 @@ const handleSkip = () => {
         <button
           className="p-2 rounded-full bg-fuchsia-200 hover:bg-fuchsia-300"
           onClick={onPrevious}
-          disabled={isFirstSong}
         >
           <BackwardIcon
             className={`h-5 w-5 ${isFirstSong ? 'text-fuchsia-400' : 'text-fuchsia-600'}`}
@@ -97,7 +99,7 @@ const handleSkip = () => {
           )}
         </button>
 
-        {/* Forward Button */}
+        {/* Forward Button (Always Clickable) */}
         <button
           className="p-2 rounded-full bg-fuchsia-200 hover:bg-fuchsia-300"
           onClick={handleSkip}
@@ -107,10 +109,10 @@ const handleSkip = () => {
 
         {/* Shuffle Button */}
         <button
-          className={`p-2 rounded-full ${isShuffle ? 'bg-fuchsia-500' : 'bg-fuchsia-200'} hover:bg-fuchsia-300`}
+          className={`p-2 rounded-full ${isShuffle ? 'bg-fuchsia-500 text-white' : 'bg-fuchsia-200 text-fuchsia-600'} hover:bg-fuchsia-300`}
           onClick={handleShuffleToggle}
         >
-          <ArrowPathRoundedSquareIcon className="h-5 w-5 text-fuchsia-600" />
+          <ArrowPathRoundedSquareIcon className="h-5 w-5" />
         </button>
       </div>
     </div>
