@@ -17,7 +17,7 @@ const MusicPlayer: React.FC = () => {
   const [currentSong, setCurrentSong] = useState<Song | null>(null);
   const [isPlaying, setIsPlaying] = useState<boolean>(false);
   const [volume, setVolume] = useState<number>(1);
-  const [isShuffle, setIsShuffle] = useState<boolean>(false);
+  const [isShuffle, setIsShuffle] = useState<boolean>(false); // Moved shuffle state here
 
   useEffect(() => {
     if (!loading && playlist.length > 0) {
@@ -25,30 +25,38 @@ const MusicPlayer: React.FC = () => {
     }
   }, [loading, playlist]);
 
-  // Skip to the next song, with looping
+  // ✅ Toggle Shuffle Mode
+  const handleToggleShuffle = () => {
+    setIsShuffle((prev) => !prev);
+    console.log(`Shuffle Mode: ${!isShuffle}`);
+  };
+
+  // ✅ Skip to Next Song, Looping at the End
   const handleSkip = useCallback(() => {
     if (!currentSong || playlist.length <= 1) return;
-    const nextIndex = (playlist.findIndex(song => song.id === currentSong.id) + 1) % playlist.length;
-    console.log(`Skipping to next song: ${playlist[nextIndex].title}`);
+    
+    let nextIndex;
+    if (isShuffle) {
+      do {
+        nextIndex = Math.floor(Math.random() * playlist.length);
+      } while (playlist[nextIndex].id === currentSong.id); // Ensure it's a different song
+      console.log(`Shuffle Mode: Skipping to ${playlist[nextIndex].title}`);
+    } else {
+      nextIndex = (playlist.findIndex(song => song.id === currentSong.id) + 1) % playlist.length;
+      console.log(`Skipping to ${playlist[nextIndex].title}`);
+    }
+
     setCurrentSong(playlist[nextIndex]);
-  }, [playlist, currentSong]);
+  }, [playlist, currentSong, isShuffle]);
 
-  // Shuffle to a random song, different from the current one
-  const handleShuffle = useCallback(() => {
-    if (!currentSong || playlist.length <= 1) return;
-    let randomIndex;
-    do {
-      randomIndex = Math.floor(Math.random() * playlist.length);
-    } while (playlist[randomIndex].id === currentSong.id); // Ensure it's a different song
-    console.log(`Shuffling to: ${playlist[randomIndex].title}`);
-    setCurrentSong(playlist[randomIndex]);
-  }, [playlist, currentSong]);
-
-  // Go to the previous song, with looping
+  // ✅ Previous Song (Loop Back to Last if at First Song)
   const handlePrevious = useCallback(() => {
     if (!currentSong || playlist.length <= 1) return;
-    const previousIndex = (playlist.findIndex(song => song.id === currentSong.id) - 1 + playlist.length) % playlist.length;
-    console.log(`Going back to: ${playlist[previousIndex].title}`);
+
+    let previousIndex = playlist.findIndex(song => song.id === currentSong.id) - 1;
+    if (previousIndex < 0) previousIndex = playlist.length - 1; // Loop to last song
+
+    console.log(`Going back to ${playlist[previousIndex].title}`);
     setCurrentSong(playlist[previousIndex]);
   }, [playlist, currentSong]);
 
@@ -73,12 +81,14 @@ const MusicPlayer: React.FC = () => {
           <CurrentlyPlaying
             song={currentSong}
             onPlayPause={handlePlayPause}
-            onSkip={isShuffle ? handleShuffle : handleSkip} // ✅ Now correctly switches between normal skip & shuffle
+            onSkip={handleSkip}
             onBack={handlePrevious}
+            onToggleShuffle={handleToggleShuffle}
             isPlaying={isPlaying}
             volume={volume}
             onVolumeChange={handleVolumeChange}
             playlist={playlist}
+            isShuffle={isShuffle} // Pass shuffle state
           />
         )}
       </div>

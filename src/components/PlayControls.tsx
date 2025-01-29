@@ -13,7 +13,7 @@ interface PlayControlsProps {
   onPlayPauseToggle: () => void;
   onPrevious: () => void;
   onSkip: () => void;
-  onToggleShuffle: () => void;
+  onToggleShuffle: () => void; // ✅ Updated to use function from `MusicPlayer.tsx`
   isFirstSong: boolean;
   isLastSong: boolean;
   isShuffle: boolean;
@@ -24,9 +24,8 @@ const PlayControls: React.FC<PlayControlsProps> = ({
   onPlayPauseToggle,
   onPrevious,
   onSkip,
-  onToggleShuffle,
+  onToggleShuffle, // ✅ Now correctly managed by parent
   isFirstSong,
-  isLastSong,
   isShuffle
 }) => {
   return (
@@ -53,15 +52,14 @@ const PlayControls: React.FC<PlayControlsProps> = ({
         <button
           className="p-2 rounded-full bg-fuchsia-200 hover:bg-fuchsia-300"
           onClick={onSkip}
-          disabled={isLastSong}
         >
-          <ForwardIcon className={`h-5 w-5 ${isLastSong ? 'text-fuchsia-400' : 'text-fuchsia-600'}`} />
+          <ForwardIcon className="h-5 w-5 text-fuchsia-600" />
         </button>
 
         {/* Shuffle Button */}
         <button
           className={`p-2 rounded-full ${isShuffle ? 'bg-fuchsia-500 text-white' : 'bg-fuchsia-200 text-fuchsia-600'} hover:bg-fuchsia-300`}
-          onClick={onToggleShuffle}
+          onClick={onToggleShuffle} // Calls function from `MusicPlayer.tsx`
         >
           <ArrowPathRoundedSquareIcon className="h-5 w-5" />
         </button>
