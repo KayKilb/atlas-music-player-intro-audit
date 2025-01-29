@@ -3,7 +3,7 @@ import React from 'react';
 import CoverArt from './CoverArt';
 import SongTitle from './SongTitle';
 import PlayControls from './PlayControls';
-import VolumeControl from './VolumeControl';
+import VolumeControls from './VolumeControls';
 
 interface Song {
   cover?: string;
@@ -56,7 +56,7 @@ const CurrentlyPlaying: React.FC<CurrentlyPlayingProps> = ({
       />
 
       {/* Volume control slider */}
-      <VolumeControl value={volume} onChange={onVolumeChange} />
+      <VolumeControls value={volume} onChange={onVolumeChange} />
     </div>
   );
 };

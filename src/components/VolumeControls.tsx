@@ -1,4 +1,4 @@
-// VolumeControl.tsx
+// VolumeControls.tsx
 import React, { useState, useEffect } from 'react';
 import { SpeakerWaveIcon, SpeakerXMarkIcon } from '@heroicons/react/24/solid';
 
@@ -7,7 +7,7 @@ interface VolumeControlProps {
   onChange: (newVolume: number) => void;
 }
 
-const VolumeControl: React.FC<VolumeControlProps> = ({ value, onChange }) => {
+const VolumeControls: React.FC<VolumeControlProps> = ({ value, onChange }) => {
   const [sliderValue, setSliderValue] = useState(value);
 
   useEffect(() => {
@@ -83,4 +83,4 @@ const VolumeControl: React.FC<VolumeControlProps> = ({ value, onChange }) => {
   );
 };
 
-export default VolumeControl;
+export default VolumeControls;

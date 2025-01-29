@@ -1,4 +1,4 @@
-// playControl.tsx
+// PlayControls.tsx
 import React, { useState } from 'react';
 import {
   PlayIcon,
@@ -12,7 +12,7 @@ interface PlayControlsProps {
   isPlaying: boolean;
   onPlayPauseToggle: () => void;
   onPrevious: () => void;
-  onSkip: () => void;
+  onSkip: (index?: number) => void;
   isFirstSong: boolean;
   isLastSong: boolean;
 }
@@ -43,11 +43,25 @@ const PlayControls: React.FC<PlayControlsProps> = ({
     setShuffle((prevShuffle) => !prevShuffle);
   };
 
-  const handleSkip = () => {
-    if (!isLastSong) { // Only call onSkip if it's not the last song
-      onSkip();
-    }
-  };
+const handleSkip = () => {
+  console.log("Skipping Song..."); // Debugging log
+  
+  if (isShuffle) {
+    const randomIndex = Math.floor(Math.random() * 10); // Assuming 10 songs
+    console.log(`Shuffle Mode: Skipping to random song index ${randomIndex}`);
+    onSkip(randomIndex); // Skip to a random song
+  } else {
+    console.log("Skipping to next song...");
+
+    onSkip((prevIndex) => {
+      if (isLastSong) {
+        console.log("Reached last song. Looping to first song.");
+        return 0; // Loop back to first song
+      }
+      return prevIndex + 1; // Move to next song normally
+    });
+  }
+};
 
   return (
     <div className="bg-gray-100 p-4 rounded-lg">
@@ -87,11 +101,8 @@ const PlayControls: React.FC<PlayControlsProps> = ({
         <button
           className="p-2 rounded-full bg-fuchsia-200 hover:bg-fuchsia-300"
           onClick={handleSkip}
-          disabled={isLastSong}
         >
-          <ForwardIcon
-            className={`h-5 w-5 ${isLastSong ? 'text-fuchsia-400' : 'text-fuchsia-600'}`}
-          />
+          <ForwardIcon className="h-5 w-5 text-fuchsia-600" />
         </button>
 
         {/* Shuffle Button */}
